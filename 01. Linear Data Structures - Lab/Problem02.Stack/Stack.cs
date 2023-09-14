@@ -8,41 +8,72 @@
     {
         private class Node
         {
-            
+            public T Item { get; set; }
+
+            public Node Next { get; set; }
         }
 
         private Node top;
 
-        public int Count => throw new System.NotImplementedException();
+        public int Count { get; private set; }
 
         public void Push(T item)
         {
-            throw new NotImplementedException();
+            var newNode = new Node()
+            {
+                Item = item,
+                Next = top
+            };
+
+            top = newNode;
+            Count++;
         }
 
         public T Pop()
         {
-            throw new System.NotImplementedException();
+            var result = Peek();
+            var newTop = top.Next;
+            top.Next = null;
+            top = newTop;
+            Count--;
+
+            return result;
         }
 
         public T Peek()
         {
-            throw new System.NotImplementedException();
+            if (Count == 0)
+            {
+                throw new InvalidOperationException("The stack is empty!");
+            }
+
+            return top.Item;
         }
 
         public bool Contains(T item)
         {
-            throw new System.NotImplementedException();
+            foreach (var member in this)            
+            {
+                if (member.Equals(item))
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         public IEnumerator<T> GetEnumerator()
         {
-            throw new NotImplementedException();
+            var node = top;
+            while (node != null)
+            {
+                yield return node.Item;
+                node = node.Next;
+            }
         }
 
         IEnumerator IEnumerable.GetEnumerator()
-        {
-            throw new NotImplementedException();
-        }
+            => GetEnumerator();
     }
 }

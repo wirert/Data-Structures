@@ -97,7 +97,8 @@
                 return false;
             }
 
-           RemoveAt(index);
+            RemoveAt(index);
+            ShrinkIfNeeded();
 
             return true;
         }
@@ -112,6 +113,8 @@
             {
                 items[i] = items[i + 1];
             }
+
+            ShrinkIfNeeded();
         }
 
         IEnumerator IEnumerable.GetEnumerator()
@@ -125,6 +128,16 @@
             {
                 var copy = new T[items.Length * 2];
                 Array.Copy(items, copy, items.Length);
+                items = copy;
+            }
+        }
+
+        private void ShrinkIfNeeded()
+        {
+            if (Count < items.Length / 2)
+            {
+                var copy = new T[items.Length / 2];
+                Array.Copy(items, copy, Count); 
                 items = copy;
             }
         }
