@@ -6,46 +6,133 @@
 
     public class DoublyLinkedList<T> : IAbstractLinkedList<T>
     {
+        private class Node
+        {
+            public Node(T value)
+            {
+                Value = value;
+            }
+
+            public T Value { get; set; }
+            public Node Next { get; set; }
+            public Node Previous { get; set; }
+        }
+
+        private Node head;
+        private Node tail;
+
         public int Count { get; private set; }
 
         public void AddFirst(T item)
         {
-            throw new NotImplementedException();
+            var node = new Node(item);
+
+            if (Count == 0)
+            {
+                head = tail = node;
+            }
+            else
+            {
+                head.Previous = node;
+                node.Next = head;
+                head = node;
+            }
+
+            Count++;
         }
 
         public void AddLast(T item)
         {
-            throw new NotImplementedException();
+            var node = new Node(item);
+            if (Count == 0)
+            {
+                head = tail = node;
+            }
+            else
+            {
+                node.Previous = tail;
+                tail.Next = node;
+                tail = node;
+            }
+
+            Count++;
         }
 
         public T GetFirst()
         {
-            throw new NotImplementedException();
+            ThrowIfNoElements();
+
+            return head.Value;
         }
 
         public T GetLast()
         {
-            throw new NotImplementedException();
+            ThrowIfNoElements();
+
+            return tail.Value;
         }
 
         public T RemoveFirst()
         {
-            throw new NotImplementedException();
+            ThrowIfNoElements();
+
+            var elementToRemove = head;
+
+            if (Count == 1)
+            {
+                head = tail = null;
+            }            
+            else
+            {
+                head = elementToRemove.Next;
+                head.Previous = null;
+            }
+
+            Count--;
+
+            return elementToRemove.Value;
         }
 
         public T RemoveLast()
         {
-            throw new NotImplementedException();
+            ThrowIfNoElements();
+
+            var elementToRemove = tail;
+
+            if (Count == 1)
+            {
+                head = tail = null;
+            }
+            else
+            {
+                tail = elementToRemove.Previous;
+                tail.Next = null;
+            }
+
+            Count--;
+
+            return elementToRemove.Value;
         }
 
         public IEnumerator<T> GetEnumerator()
         {
-            throw new NotImplementedException();
+            var currentNode = head;
+
+            while (currentNode != null)
+            {
+                yield return currentNode.Value;
+                currentNode = currentNode.Next;
+            }
         }
 
-        IEnumerator IEnumerable.GetEnumerator()
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
+        private void ThrowIfNoElements()
         {
-            throw new NotImplementedException();
+            if (Count == 0)
+            {
+                throw new InvalidOperationException("There is no elements in list");
+            }
         }
     }
 }
