@@ -1,22 +1,23 @@
 ﻿namespace Demo
 {
     using _01.BinaryTree;
+    using _04.BinarySearchTree;
     using System;
 
     internal class Program
     {
         static void Main(string[] args)
         {
-            var tree = new BinaryTree<int>(17,
-                            new BinaryTree<int>(9, 
-                                    new BinaryTree<int>(3, null, null),
-                                    new BinaryTree<int>(11, null, null)),
-                            new BinaryTree<int>(25, 
-                                    new BinaryTree<int>(20, null, null),
-                                    new BinaryTree<int>(31, null, null))
-            );
+            var bst = new BinarySearchTree<int>();
+            bst.Insert(12);
+            bst.Insert(21);
+            bst.Insert(5);
+            bst.Insert(1);
+            bst.Insert(8);
+            bst.Insert(18);
+            bst.Insert(23);
 
-
+            Console.WriteLine(bst.Contains(5));
         }
     }
 }
