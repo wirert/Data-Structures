@@ -1,4 +1,4 @@
-﻿namespace _02.MaxHeap
+﻿namespace _03.MaxHeap
 {
     using System;
 

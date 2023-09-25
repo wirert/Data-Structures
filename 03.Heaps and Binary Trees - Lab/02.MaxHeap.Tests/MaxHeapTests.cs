@@ -1,8 +1,7 @@
-namespace _02.MaxHeap.Tests
+namespace _03.MaxHeap.Tests
 {
     using System.Collections.Generic;
     using NUnit.Framework;
-    using _02.MaxHeap;
 
     public class MaxHeapTests
     {

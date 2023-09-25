@@ -1,4 +1,4 @@
-﻿namespace _02.MaxHeap
+﻿namespace _03.MaxHeap
 {
     using System;
     using System.Collections.Generic;
@@ -18,6 +18,7 @@
         public void Add(T element)
         {
             heap.Add(element);
+
             Heapify(Size - 1);
         }
        
