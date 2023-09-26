@@ -30,10 +30,13 @@
         {
             priorityQueue.Add(element);
 
-            Heapify(Size - 1);
+            HeapifyUp(Size - 1);
         }
 
-        public T Peek() => priorityQueue[0];
+        public T Peek()
+        {
+            return Size > 0 ? priorityQueue[0] : throw new InvalidOperationException();
+        }
 
         private void HeapifyDown(int index)
         {
@@ -59,7 +62,7 @@
             }
         }
 
-        private void Heapify(int index)
+        private void HeapifyUp(int index)
         {
             if (index == 0) return;
 
@@ -69,7 +72,7 @@
             {
                SwapIndexes(parentIndex, index);
 
-                Heapify(parentIndex);
+                HeapifyUp(parentIndex);
             }
         }
 

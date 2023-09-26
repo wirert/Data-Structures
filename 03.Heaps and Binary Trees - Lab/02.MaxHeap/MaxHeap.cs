@@ -17,14 +17,19 @@
 
         public void Add(T element)
         {
+            if (element.Equals(default)) return;
+
             heap.Add(element);
 
-            Heapify(Size - 1);
+            HeapifyUp(Size - 1);
         }
        
-        public T Peek() => heap[0];
+        public T Peek()
+        {
+            return Size > 0 ? heap[0] : throw new InvalidOperationException();
+        }
 
-        private void Heapify(int index)
+        private void HeapifyUp(int index)
         {
             if (index == 0) return;
 
@@ -36,7 +41,7 @@
                 heap[parentIndex] = heap[index];
                 heap[index] = copy;
 
-                Heapify(parentIndex);
+                HeapifyUp(parentIndex);
             }
         }
 

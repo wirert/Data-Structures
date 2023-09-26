@@ -11,9 +11,7 @@
 
         public BinarySearchTree(Node<T> root)
         {
-            Root = root;
-            LeftChild = root.LeftChild;
-            RightChild = root.RightChild;
+            PreOrderCopy(root);
         }
 
         public Node<T> Root { get; private set; }
@@ -92,6 +90,18 @@
             }
 
             return null;
+        }
+
+        private void PreOrderCopy(Node<T> node)
+        {
+            if (node == null)
+            {
+                return;
+            }
+
+            Insert(node.Value);
+            PreOrderCopy(node.LeftChild);
+            PreOrderCopy(node.RightChild);
         }
     }
 }
