@@ -17,12 +17,10 @@
             public T Value { get; }
             public Node Left { get; set; }
             public Node Right { get; set; }
-
             public int Count { get; set; }
         }
 
         private Node root;
-        private int count;
 
         private BinarySearchTree(Node node)
         {
@@ -343,7 +341,5 @@
 
             return Select(rank - (leftCount + 1), node.Right);
         }
-
-
     }
 }
