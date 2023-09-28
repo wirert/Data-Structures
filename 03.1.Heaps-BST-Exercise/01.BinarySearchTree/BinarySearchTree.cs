@@ -196,7 +196,6 @@
             if (node == null)
             {
                 node = new Node(element);
-                count++;
             }
             else if (element.CompareTo(node.Value) < 0)
             {

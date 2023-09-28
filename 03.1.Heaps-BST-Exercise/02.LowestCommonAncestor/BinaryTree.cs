@@ -47,17 +47,12 @@
             Queue<T> firstNodeAncestors = FindAllAncestors(firstNode);
             Queue<T> secondNodeAncestors = FindAllAncestors(secondNode);
 
-            while (firstNodeAncestors.Count != 0)
-            {
-                var currAncestor = firstNodeAncestors.Dequeue();
+            var dfa = firstNodeAncestors
+                .Where(fa => secondNodeAncestors.Contains(fa))
+                .FirstOrDefault();
 
-                if (secondNodeAncestors.Contains(currAncestor))
-                {
-                    return currAncestor;
-                }
-            }
-
-            throw new InvalidOperationException();
+            return dfa == null ? throw new InvalidOperationException() 
+                               : dfa;
         }
 
         private Queue<T> FindAllAncestors(BinaryTree<T> node)
