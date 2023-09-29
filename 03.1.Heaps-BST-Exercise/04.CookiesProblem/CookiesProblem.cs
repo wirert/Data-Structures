@@ -9,7 +9,30 @@ namespace _04.CookiesProblem
     {
         public int Solve(int minSweetness, int[] cookies)
         {
-            throw new NotImplementedException();
+            var cookieQueue = new MinHeap<int>();
+
+            foreach (var cookie in cookies)
+            {
+                cookieQueue.Add(cookie);
+            }
+
+            int count = 0;
+
+            while (cookieQueue.Size > 1)
+            {
+                var firstCookie = cookieQueue.ExtractMin();
+                var secondCookie = cookieQueue.ExtractMin();
+
+                if (firstCookie >= minSweetness)
+                {
+                    return count;
+                }
+
+                cookieQueue.Add(firstCookie + secondCookie * 2);
+                count++;
+            }
+
+            return -1;
         }
     }
 }
