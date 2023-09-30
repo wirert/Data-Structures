@@ -18,5 +18,10 @@ namespace TripAdministrations
         public Transportation Transportation { get; set; }
 
         public int Price { get; set; }
+
+        public Company Company { get; set; }
+
+        public override bool Equals(object obj)
+            => Id.Equals((obj as Trip).Id);
     }
 }
