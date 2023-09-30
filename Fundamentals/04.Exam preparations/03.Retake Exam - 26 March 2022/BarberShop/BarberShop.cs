@@ -1,68 +1,80 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace BarberShop
 {
     public class BarberShop : IBarberShop
     {
+        private HashSet<Client> clients = new HashSet<Client> ();
+        private HashSet<Barber> barbers = new HashSet<Barber>();
+
         public void AddBarber(Barber b)
         {
-            throw new NotImplementedException();
-        }
+            if (barbers.Add(b) == false)
+            {
+                throw new ArgumentException();
+            }
+        } 
+
 
         public void AddClient(Client c)
         {
-            throw new NotImplementedException();
+            if (clients.Add(c) == false)
+            {
+                throw new ArgumentException();
+            }
         }
+        
+        public bool Exist(Barber b) => barbers.Contains(b);
 
-        public bool Exist(Barber b)
-        {
-            throw new NotImplementedException();
-        }
+        public bool Exist(Client c) => clients.Contains(c);
 
-        public bool Exist(Client c)
-        {
-            throw new NotImplementedException();
-        }
+        public IEnumerable<Barber> GetBarbers() 
+            => barbers.AsEnumerable();
 
-        public IEnumerable<Barber> GetBarbers()
-        {
-            throw new NotImplementedException();
-        }
-
-        public IEnumerable<Client> GetClients()
-        {
-            throw new NotImplementedException();
-        }
+        public IEnumerable<Client> GetClients() 
+            => clients.AsEnumerable();
 
         public void AssignClient(Barber b, Client c)
         {
-            throw new NotImplementedException();
+            if (!Exist(b) || !Exist(c))
+            {
+                throw new ArgumentException();
+            }
+            
+            c.Barber = b;
+            b.Clients.Add(c);
         }
 
         public void DeleteAllClientsFrom(Barber b)
         {
-            throw new NotImplementedException();
+            if (!Exist(b))
+            {
+                throw new ArgumentException();
+            }
+                        
+            //foreach (var client in b.Clients)
+            //{
+            //    client.Barber = null;
+            //}
+
+            b.Clients.Clear();
         }
 
         public IEnumerable<Client> GetClientsWithNoBarber()
-        {
-            throw new NotImplementedException();
-        }
+            => clients.Where(c => c.Barber == null);
 
         public IEnumerable<Barber> GetAllBarbersSortedWithClientsCountDesc()
-        {
-            throw new NotImplementedException();
-        }
+            => barbers.OrderByDescending(b => b.Clients.Count);
 
         public IEnumerable<Barber> GetAllBarbersSortedWithStarsDecsendingAndHaircutPriceAsc()
-        {
-            throw new NotImplementedException();
-        }
+            => barbers.OrderByDescending(b => b.Stars)
+                      .ThenBy(b => b.HaircutPrice);
 
         public IEnumerable<Client> GetClientsSortedByAgeDescAndBarbersStarsDesc()
-        {
-            throw new NotImplementedException();
-        }
+            => clients.Where(c => c.Barber != null)
+                      .OrderByDescending(c => c.Age)
+                      .ThenByDescending(c => c.Barber.Stars);
     }
 }

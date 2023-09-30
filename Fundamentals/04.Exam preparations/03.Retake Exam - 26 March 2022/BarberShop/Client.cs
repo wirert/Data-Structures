@@ -14,5 +14,10 @@ namespace BarberShop
         public int Age { get; set; }
         public Gender Gender { get; set; }
         public Barber Barber { get; set; }
+
+        public override bool Equals(object obj)
+        {
+            return Name.Equals(((Client)obj).Name);
+        }
     }
 }

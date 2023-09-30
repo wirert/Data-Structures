@@ -1,5 +1,6 @@
 ﻿using BarberShop;
 using NUnit.Framework;
+using System.Diagnostics;
 
 public class Test_01
 {

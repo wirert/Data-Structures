@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+
 namespace BarberShop
 {
     public class Barber
@@ -13,5 +15,12 @@ namespace BarberShop
         public string Name { get; set; }
         public int HaircutPrice { get; set; }
         public int Stars { get; set; }
+
+        public HashSet<Client> Clients { get; set; } = new HashSet<Client>();
+
+        public override bool Equals(object obj)
+        {
+            return Name.Equals(((Barber)obj).Name);
+        }
     }
 }
