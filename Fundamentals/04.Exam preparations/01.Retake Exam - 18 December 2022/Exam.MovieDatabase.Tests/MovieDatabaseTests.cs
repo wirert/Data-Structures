@@ -104,7 +104,7 @@ public class MovieDatabaseTests
 
         HashSet<Movie> set = this.movieDatabase.GetAllMovies().ToHashSet();
 
-        Assert.AreEqual(set.Count, 3);
+        Assert.That(3, Is.EqualTo(set.Count));
         Assert.IsTrue(set.Contains(movie1));
         Assert.IsTrue(set.Contains(movie2));
         Assert.IsTrue(set.Contains(movie3));
