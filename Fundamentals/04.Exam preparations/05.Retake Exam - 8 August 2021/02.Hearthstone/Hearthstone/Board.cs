@@ -49,7 +49,7 @@ public class Board : IBoard
 
     public void RemoveDeath()
     {
-        var deathCards = deck.Values.Where(c => c.Health <= 0).ToHashSet();
+        var deathCards = deck.Values.Where(c => c.Health <= 0).ToArray();
 
         foreach (var card in deathCards)
         {
