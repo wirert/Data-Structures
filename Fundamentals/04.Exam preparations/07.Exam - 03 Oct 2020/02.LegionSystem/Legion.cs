@@ -14,7 +14,7 @@
         public bool Contains(IEnemy enemy) => enemiesBySpeed.ContainsKey(enemy.AttackSpeed);
 
         public void Create(IEnemy enemy)
-        {
+        {            
             if (!Contains(enemy))
             {
                 enemiesBySpeed.Add(enemy.AttackSpeed, enemy);

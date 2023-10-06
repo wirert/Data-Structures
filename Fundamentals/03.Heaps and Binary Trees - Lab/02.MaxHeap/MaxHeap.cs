@@ -26,7 +26,8 @@
        
         public T Peek()
         {
-            return Size > 0 ? heap[0] : throw new InvalidOperationException();
+            return Size > 0 ? heap[0] 
+                            : throw new InvalidOperationException();
         }
 
         private void HeapifyUp(int index)
