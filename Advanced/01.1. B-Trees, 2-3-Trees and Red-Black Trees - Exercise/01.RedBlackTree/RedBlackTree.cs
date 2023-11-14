@@ -179,14 +179,14 @@
 
         private Node DeleteMax(Node node)
         {
+            if (IsRed(node.Left))
+            {
+                node = RotateRight(node);
+            }
+
             if (node.Right == null)
             {
-                if (node.Left == null)
-                {
-                    return null;
-                }
-
-                node = RotateRight(node);
+                return null;
             }
 
             if (!IsRed(node.Right) && !IsRed(node.Right.Left))
