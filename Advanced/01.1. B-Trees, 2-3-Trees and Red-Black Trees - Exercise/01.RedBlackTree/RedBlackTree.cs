@@ -21,8 +21,6 @@
             public bool Color { get; set; }
         }
 
-        public Node root;
-
         private RedBlackTree(Node node)
         {
             PreOrderCopy(node);
@@ -32,9 +30,102 @@
         {
         }
 
+        public Node root;
+
+        public int Count()
+        {
+            return Count(root);
+        }
+
         public void EachInOrder(Action<T> action)
         {
             EachInOrder(root, action);
+        }
+
+        public RedBlackTree<T> Search(T element)
+        {
+            var node = FindNodeByValue(element);
+
+            return new RedBlackTree<T>(node);
+        }       
+
+        public void Insert(T value)
+        {
+            root = Insert(root, value);
+
+            if (root.Color == RED)
+            {
+                root.Color = BLACK;
+            }
+        }
+
+        public void DeleteMin()
+        {
+            if (root == null)
+            {
+                throw new InvalidOperationException();
+            }
+
+            root = DeleteMin(root);
+
+            if (root != null)
+            {
+                root.Color = BLACK;
+            }
+        }
+
+        public void DeleteMax()
+        {
+            if (root == null)
+            {
+                throw new InvalidOperationException();
+            }
+
+            root = DeleteMax(root);
+
+            if (root != null)
+            {
+                root.Color = BLACK;
+            }
+        }
+
+        public void Delete(T key)
+        {
+            if (root == null)
+            {
+                throw new InvalidOperationException();
+            }
+
+            root = Delete(root, key);
+
+            if (root != null)
+            {
+                root.Color = BLACK;
+            }
+        }
+        
+        //private methods
+
+        private void PreOrderCopy(Node node)
+        {
+            if (node == null)
+            {
+                return;
+            }
+
+            Insert(node.Value);
+            PreOrderCopy(node.Left);
+            PreOrderCopy(node.Right);
+        }
+
+        private int Count(Node node)
+        {
+            if (node == null)
+            {
+                return 0;
+            }
+
+            return 1 + Count(node.Left) + Count(node.Right);
         }
 
         private void EachInOrder(Node node, Action<T> action)
@@ -47,13 +138,6 @@
             EachInOrder(node.Left, action);
             action(node.Value);
             EachInOrder(node.Right, action);
-        }
-
-        public RedBlackTree<T> Search(T element)
-        {
-            var node = FindNodeByValue(element);
-
-            return new RedBlackTree<T>(node);
         }
 
         private Node FindNodeByValue(T element)
@@ -79,28 +163,6 @@
             return curNode;
         }
 
-        private void PreOrderCopy(Node node)
-        {
-            if (node == null)
-            {
-                return;
-            }
-
-            Insert(node.Value);
-            PreOrderCopy(node.Left);
-            PreOrderCopy(node.Right);
-        }
-
-        public void Insert(T value)
-        {
-            root = Insert(root, value);
-
-            if (root.Color == RED)
-            {
-                root.Color = BLACK;
-            }
-        }
-
         private Node Insert(Node node, T element)
         {
             if (node == null)
@@ -120,19 +182,43 @@
             return FixUp(node);
         }
 
-        public void Delete(T key)
+        private Node DeleteMin(Node node)
         {
-            if (root == null)
+            if (node.Left == null)
             {
-                throw new InvalidOperationException();
+                return null;
             }
 
-            root = Delete(root, key);
-
-            if (root != null)
+            if (!IsRed(node.Left) && !IsRed(node.Left.Left))
             {
-                root.Color = BLACK;
+                node = MoveRedLeft(node);
             }
+
+            node.Left = DeleteMin(node.Left);
+
+            return FixUp(node);
+        }
+
+        private Node DeleteMax(Node node)
+        {
+            if (IsRed(node.Left))
+            {
+                node = RotateRight(node);
+            }
+
+            if (node.Right == null)
+            {
+                return null;
+            }
+
+            if (!IsRed(node.Right) && !IsRed(node.Right.Left))
+            {
+                node = MoveRedRight(node);
+            }
+
+            node.Right = DeleteMax(node.Right);
+
+            return FixUp(node);
         }
 
         private Node Delete(Node node, T element)
@@ -175,90 +261,6 @@
             }
 
             return FixUp(node);
-        }
-
-        public void DeleteMin()
-        {
-            if (root == null)
-            {
-                throw new InvalidOperationException();
-            }
-
-            root = DeleteMin(root);
-
-            if (root != null)
-            {
-                root.Color = BLACK;
-            }
-        }
-
-        private Node DeleteMin(Node node)
-        {
-            if (node.Left == null)
-            {
-                return null;
-            }
-
-            if (!IsRed(node.Left) && !IsRed(node.Left.Left))
-            {
-                node = MoveRedLeft(node);
-            }
-
-            node.Left = DeleteMin(node.Left);
-
-            return FixUp(node);
-        }
-
-        public void DeleteMax()
-        {
-            if (root == null)
-            {
-                throw new InvalidOperationException();
-            }
-
-            root = DeleteMax(root);
-
-            if (root != null)
-            {
-                root.Color = BLACK;
-            }
-        }
-
-        private Node DeleteMax(Node node)
-        {
-            if (IsRed(node.Left))
-            {
-                node = RotateRight(node);
-            }
-
-            if (node.Right == null)
-            {
-                return null;
-            }
-
-            if (!IsRed(node.Right) && !IsRed(node.Right.Left))
-            {
-                node = MoveRedRight(node);
-            }
-
-            node.Right = DeleteMax(node.Right);
-
-            return FixUp(node);
-        }
-
-        public int Count()
-        {
-            return Count(root);
-        }
-
-        private int Count(Node node)
-        {
-            if (node == null)
-            {
-                return 0;
-            }
-
-            return 1 + Count(node.Left) + Count(node.Right);
         }
 
         // Rotations
@@ -345,7 +347,6 @@
 
             return node.Color == RED;
         }
-
 
         //Helper methods
 
