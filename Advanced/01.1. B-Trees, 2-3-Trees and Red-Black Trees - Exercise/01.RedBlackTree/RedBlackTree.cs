@@ -127,7 +127,54 @@
                 throw new InvalidOperationException();
             }
 
-            throw new NotImplementedException();
+            root = Delete(root, key);
+
+            if (root != null)
+            {
+                root.Color = BLACK;
+            }
+        }
+
+        private Node Delete(Node node, T element)
+        {
+            if (IsSmaller(element, node.Value))
+            {
+                if (!IsRed(node.Left) && !IsRed(node.Left.Left))
+                {
+                    node = MoveRedLeft(node);
+                }
+
+                node.Left = Delete(node.Left, element);
+            }
+            else
+            {
+                if (IsRed(node.Left))
+                {
+                    node = RotateRight(node);
+                }
+
+                if (AreEqual(element, node.Value) && node.Right == null)
+                {
+                    return null;
+                }
+
+                if (!IsRed(node.Right) && !IsRed(node.Right.Left))
+                {
+                    node = MoveRedRight(node);
+                }
+
+                if (AreEqual(element, node.Value))
+                {
+                    node.Value = GetMinValue(node.Right);
+                    DeleteMin(node.Right);
+                }
+                else
+                {
+                    node.Right = Delete(node.Right, element);
+                }
+            }
+
+            return FixUp(node);
         }
 
         public void DeleteMin()
@@ -199,19 +246,6 @@
             return FixUp(node);
         }
 
-        private Node MoveRedRight(Node node)
-        {
-            FlipColors(node);
-
-            if (IsRed(node.Left.Left))
-            {
-                node = RotateRight(node);
-                FlipColors(node);
-            }
-
-            return node;
-        }
-
         public int Count()
         {
             return Count(root);
@@ -272,6 +306,19 @@
             return node;
         }
 
+        private Node MoveRedRight(Node node)
+        {
+            FlipColors(node);
+
+            if (IsRed(node.Left.Left))
+            {
+                node = RotateRight(node);
+                FlipColors(node);
+            }
+
+            return node;
+        }
+
         private Node FixUp(Node node)
         {
             if (IsRed(node.Right))
@@ -303,5 +350,17 @@
         //Helper methods
 
         private bool IsSmaller(T a, T b) => a.CompareTo(b) < 0;
+
+        private bool AreEqual(T a, T b) => a.CompareTo(b) == 0;
+
+        private T GetMinValue(Node node)
+        {
+            if (node.Left == null)
+            {
+                return node.Value;
+            }
+
+            return GetMinValue(node.Left);
+        }
     }
 }
