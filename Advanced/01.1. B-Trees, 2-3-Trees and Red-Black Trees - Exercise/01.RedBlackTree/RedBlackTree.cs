@@ -70,9 +70,9 @@
                 {
                     curNode = curNode.Right;
                 }
-                else 
-                { 
-                    break; 
+                else
+                {
+                    break;
                 }
             }
 
@@ -115,7 +115,7 @@
             else
             {
                 node.Right = Insert(node.Right, element);
-            }            
+            }
 
             return FixUp(node);
         }
@@ -160,7 +160,7 @@
             node.Left = DeleteMin(node.Left);
 
             return FixUp(node);
-        }   
+        }
 
         public void DeleteMax()
         {
@@ -169,7 +169,47 @@
                 throw new InvalidOperationException();
             }
 
-            throw new NotImplementedException();
+            root = DeleteMax(root);
+
+            if (root != null)
+            {
+                root.Color = BLACK;
+            }
+        }
+
+        private Node DeleteMax(Node node)
+        {
+            if (node.Right == null)
+            {
+                if (node.Left == null)
+                {
+                    return null;
+                }
+
+                node = RotateRight(node);
+            }
+
+            if (!IsRed(node.Right) && !IsRed(node.Right.Left))
+            {
+                node = MoveRedRight(node);
+            }
+
+            node.Right = DeleteMax(node.Right);
+
+            return FixUp(node);
+        }
+
+        private Node MoveRedRight(Node node)
+        {
+            FlipColors(node);
+
+            if (IsRed(node.Left.Left))
+            {
+                node = RotateRight(node);
+                FlipColors(node);
+            }
+
+            return node;
         }
 
         public int Count()
@@ -236,7 +276,7 @@
         {
             if (IsRed(node.Right))
             {
-                node = RotateLeft(node);  
+                node = RotateLeft(node);
             }
 
             if (IsRed(node.Left) && IsRed(node.Left.Left))
