@@ -23,24 +23,25 @@
         public bool Contains(T element)
         {
             return Contains(Root, element);
-        }                
+        }
 
         public void Delete(T element)
         {
-            throw new InvalidOperationException();
+            Root = Delete(Root, element);
         }
 
         public void DeleteMin()
         {
-            throw new InvalidOperationException();
+            if (Root == null) return;
+
+            var minValue = GetMinValue(Root);
+            Delete(minValue);
         }
 
         public void Insert(T element)
         {
             Root = Insert(Root, element);
         }
-
-       
 
         public void EachInOrder(Action<T> action)
         {
@@ -94,6 +95,54 @@
             return node;
         }
 
+        private Node Delete(Node node, T element)
+        {
+            if (node == null) return null;
+
+            if (element.CompareTo(node.Value) < 0)
+            {
+                node.Left = Delete(node.Left, element);
+            }
+            else if (element.CompareTo(node.Value) > 0)
+            {
+                node.Right = Delete(node.Right, element);
+            }
+            else
+            {
+                if (node.Left == null && node.Right == null)
+                    return null;
+
+                if (node.Left == null)
+                {
+                    node = node.Right;
+                }
+                else if (node.Right == null) 
+                { 
+                    node = node.Left; 
+                }
+                else 
+                {
+                    T newValue = GetMinValue(node.Right);
+                    node.Right = Delete(node.Right, newValue);
+                    node.Value = newValue;
+                }
+            }
+            node = Balance(node);
+            node.Height = 1 + Math.Max(Height(node.Left), Height(node.Right));
+
+            return node;
+        }
+
+        private T GetMinValue(Node node)
+        {
+            if (node.Left == null)
+            {
+                return node.Value;
+            }
+
+            return GetMinValue(node.Left);
+        }
+
         private Node Balance(Node node)
         {
             var balanceFactor = Height(node.Left) - Height(node.Right);
@@ -106,7 +155,7 @@
                 }
                 node = RotateRight(node);
             }
-            else if (balanceFactor < - 1)
+            else if (balanceFactor < -1)
             {
                 var rightChildBalance = Height(node.Right.Left) - Height(node.Right.Right);
 
@@ -118,7 +167,6 @@
                 node = RotateLeft(node);
             }
 
-
             return node;
         }
 
@@ -128,7 +176,7 @@
             node.Right = newRoot.Left;
             newRoot.Left = node;
 
-            node.Height = Math.Max(Height(node.Left), Height(node.Right)) + 1;  
+            node.Height = Math.Max(Height(node.Left), Height(node.Right)) + 1;
 
             return newRoot;
         }
