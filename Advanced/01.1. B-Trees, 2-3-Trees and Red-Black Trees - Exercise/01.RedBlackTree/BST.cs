@@ -121,20 +121,7 @@
         public T Floor(T element)
         {
             return this.Select(this.Rank(element) - 1);
-        }
-
-        private Node DeleteMin(Node node)
-        {
-            if (node.Left == null)
-            {
-                return node.Right;
-            }
-
-            node.Left = this.DeleteMin(node.Left);
-            node.Count = 1 + this.Count(node.Left) + this.Count(node.Right);
-
-            return node;
-        }
+        }       
 
         private int Rank(T element, Node node)
         {
@@ -158,19 +145,6 @@
             return this.Count(node.Left);
         }
 
-        private Node DeleteMax(Node node)
-        {
-            if (node.Right == null)
-            {
-                return node.Left;
-            }
-
-            node.Right = this.DeleteMax(node.Right);
-            node.Count = 1 + this.Count(node.Left) + this.Count(node.Right);
-
-            return node;
-        }
-
         private Node Select(int rank, Node node)
         {
             if (node == null)
@@ -190,6 +164,32 @@
             }
 
             return this.Select(rank - (leftCount + 1), node.Right);
+        }
+
+        private Node DeleteMax(Node node)
+        {
+            if (node.Right == null)
+            {
+                return node.Left;
+            }
+
+            node.Right = this.DeleteMax(node.Right);
+            node.Count = 1 + this.Count(node.Left) + this.Count(node.Right);
+
+            return node;
+        }
+
+        private Node DeleteMin(Node node)
+        {
+            if (node.Left == null)
+            {
+                return node.Right;
+            }
+
+            node.Left = this.DeleteMin(node.Left);
+            node.Count = 1 + this.Count(node.Left) + this.Count(node.Right);
+
+            return node;
         }
 
         private Node Delete(T element, Node node)
