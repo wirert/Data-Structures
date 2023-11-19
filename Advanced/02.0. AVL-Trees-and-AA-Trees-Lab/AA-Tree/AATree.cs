@@ -4,11 +4,7 @@ namespace AA_Tree
 
     public class AATree<T> : IBinarySearchTree<T>
         where T : IComparable<T>
-    {
-        private static Node Nil = new Node (default) 
-        {            
-            Level = 0,
-        };
+    {        
         private class Node
         {
             public Node(T element)
@@ -25,6 +21,11 @@ namespace AA_Tree
             public int Level { get; set; }
             
         }
+
+        private static Node Nil = new Node(default)
+        {
+            Level = 0,
+        };
 
         public AATree()
         {
@@ -143,7 +144,7 @@ namespace AA_Tree
                     return node.Right;
                 }
                 
-                T newValue = FindMin(node.Right);
+                T newValue = FindMinValue(node.Right);
                 node.Right = Delete(node.Right, newValue);
                 node.Value = newValue;                               
             }
@@ -179,14 +180,14 @@ namespace AA_Tree
             return node;
         }
 
-        private T FindMin(Node node)
+        private T FindMinValue(Node node)
         {
             if (node.Left == Nil)
             {
                 return node.Value;
             }
 
-            return FindMin(node.Left);
+            return FindMinValue(node.Left);
         }
 
         private Node Skew(Node node)
