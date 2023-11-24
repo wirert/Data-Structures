@@ -29,7 +29,7 @@
         {
             get
             {
-                throw new NotImplementedException();
+                return Find(key).Value;
             }
             set
             {
@@ -96,7 +96,14 @@
 
         public TValue Get(TKey key)
         {
-            throw new NotImplementedException();
+            var element = Find(key);
+
+            if (element == null)
+            {
+                throw new KeyNotFoundException($"Key {key} doesn't exists!");
+            }
+
+            return element.Value;
         }
 
 
@@ -117,7 +124,20 @@
 
         public KeyValue<TKey, TValue> Find(TKey key)
         {
-            throw new NotImplementedException();
+            int index = GetIndex(key);
+            var elements = slots[index];
+            if (elements != null)
+            {
+                foreach (var kvp in elements)
+                {
+                    if (kvp.Key.Equals(key))
+                    {
+                        return kvp;
+                    }
+                }
+            }
+
+            return null;
         }
 
         public bool ContainsKey(TKey key)
