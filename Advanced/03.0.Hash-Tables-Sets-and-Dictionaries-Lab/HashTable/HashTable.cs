@@ -29,7 +29,7 @@
         {
             get
             {
-                return Find(key).Value;
+                return Get(key);
             }
             set
             {
@@ -60,7 +60,7 @@
 
         private void GrowIfNeeded()
         {
-            if ((double)Count / Capacity < Load_Factor)
+            if ((double)(Count + 1) / Capacity < Load_Factor)
             {
                 return;
             }
@@ -106,8 +106,6 @@
             return element.Value;
         }
 
-
-
         public bool TryGetValue(TKey key, out TValue value)
         {
             var element = this.Find(key);
@@ -140,14 +138,28 @@
             return null;
         }
 
-        public bool ContainsKey(TKey key)
-        {
-            throw new NotImplementedException();
-        }
-
+        public bool ContainsKey(TKey key) => Find(key) != null;
+        
         public bool Remove(TKey key)
         {
-            throw new NotImplementedException();
+            int index = GetIndex(key);
+            if (slots[index] != null)
+            {
+                var curNode = slots[index].First;
+                while (curNode != null) 
+                {
+                    if (key.Equals(curNode.Value.Key))
+                    {
+                        slots[index].Remove(curNode);
+                        Count--;
+                        return true;
+                    }
+
+                    curNode = curNode.Next;
+                }
+            }
+
+            return false;
         }
 
         public void Clear()
@@ -156,15 +168,9 @@
             Count = 0;
         }
 
-        public IEnumerable<TKey> Keys => throw new NotImplementedException();
+        public IEnumerable<TKey> Keys => this.Select(e => e.Key);
 
-        public IEnumerable<TValue> Values
-        {
-            get
-            {
-                throw new NotImplementedException();
-            }
-        }
+        public IEnumerable<TValue> Values => this.Select(kvp => kvp.Value);
 
         public IEnumerator<KeyValue<TKey, TValue>> GetEnumerator()
         {
