@@ -3,79 +3,139 @@ namespace RoyaleArena
     using System;
     using System.Collections;
     using System.Collections.Generic;
+    using System.Linq;
 
     public class Arena : IArena
     {
-        public int Count => throw new NotImplementedException();
+        private Dictionary<int, BattleCard> cards;
+
+        public Arena()
+        {
+            cards = new Dictionary<int, BattleCard>();
+        }
+
+        public int Count => cards.Count;
 
         public void Add(BattleCard card)
         {
-            throw new NotImplementedException();
+            if (Contains(card))
+            {
+                throw new ArgumentException("Card alrady exists!");
+            }
+
+            cards.Add(card.Id, card);
         }
 
         public void ChangeCardType(int id, CardType type)
         {
-            throw new NotImplementedException();
+            var card = GetById(id);
+            card.Type = type;
         }
 
-        public bool Contains(BattleCard card)
-        {
-            throw new NotImplementedException();
-        }
+        public bool Contains(BattleCard card) => cards.ContainsKey(card.Id);
 
         public IEnumerable<BattleCard> FindFirstLeastSwag(int n)
         {
-            throw new NotImplementedException();
+            if (n > Count)
+            {
+                throw new InvalidOperationException();
+            }
+
+            return cards.Values
+               .OrderBy(c => c.Swag)
+               .ThenBy(c => c.Id)
+               .Take(n);
         }
 
         public IEnumerable<BattleCard> GetAllInSwagRange(double lo, double hi)
-        {
-            throw new NotImplementedException();
-        }
+            => cards.Values
+            .Where(c => c.Swag >= lo && c.Swag <= hi)
+            .OrderBy(c => c.Swag);
 
         public IEnumerable<BattleCard> GetByCardType(CardType type)
         {
-            throw new NotImplementedException();
+            var cardsOtType = cards.Values
+            .Where(c => c.Type == type)
+            .OrderByDescending(c => c.Damage)
+            .ThenBy(c => c.Id);
+
+            if (cardsOtType.Count() == 0)
+            {
+                throw new InvalidOperationException();
+            }
+
+            return cardsOtType;
         }
 
         public IEnumerable<BattleCard> GetByCardTypeAndMaximumDamage(CardType type, double damage)
         {
-            throw new NotImplementedException();
+            var result = GetByCardType(type).Where(c => c.Damage <= damage);
+
+            if (result.Count() == 0)
+            {
+                throw new InvalidOperationException();
+            }
+
+            return result;
         }
 
         public BattleCard GetById(int id)
         {
-            throw new NotImplementedException();
+            if (!cards.ContainsKey(id))
+            {
+                throw new InvalidOperationException($"Card with {id} id doesn't exist");
+            }
+
+            return cards[id];
         }
 
         public IEnumerable<BattleCard> GetByNameAndSwagRange(string name, double lo, double hi)
         {
-            throw new NotImplementedException();
+            var result = GetByNameOrderedBySwagDescending(name).Where(c => c.Swag >= lo && c.Swag <= hi);
+
+            if (result.Count() == 0)
+            {
+                throw new InvalidOperationException();
+            }
+
+            return result;
         }
 
         public IEnumerable<BattleCard> GetByNameOrderedBySwagDescending(string name)
         {
-            throw new NotImplementedException();
+            var result = cards.Values
+                .Where(c => c.Name == name)
+                .OrderByDescending(c => c.Swag);
+
+            if (result.Count() == 0)
+            {
+                throw new InvalidOperationException($"There are no cards with name {name}");
+            }
+
+            return result;
         }
 
         public IEnumerable<BattleCard> GetByTypeAndDamageRangeOrderedByDamageThenById(CardType type, int lo, int hi)
-        {
-            throw new NotImplementedException();
-        }
+            => GetByCardType(type).Where(c => c.Damage >= lo && c.Damage <= hi);
 
         public IEnumerator<BattleCard> GetEnumerator()
         {
-            throw new NotImplementedException();
+            foreach (var kvp in cards)
+            {
+                yield return kvp.Value;
+            }
         }
 
         public void RemoveById(int id)
         {
-            throw new NotImplementedException();
+            if (!cards.ContainsKey(id))
+            {
+                throw new InvalidOperationException($"Card with {id} id doesn't exist");
+            }
+
+            cards.Remove(id);
         }
 
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            throw new NotImplementedException();
-        }
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
     }
 }
