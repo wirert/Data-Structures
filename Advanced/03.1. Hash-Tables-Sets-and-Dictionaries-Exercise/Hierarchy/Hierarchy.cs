@@ -22,7 +22,7 @@
 
             public T Value { get; set; }
             public Node Parent { get; set; }
-            public Dictionary<T,Node> Children { get; set; }
+            public Dictionary<T, Node> Children { get; set; }
         }
 
         private Node root;
@@ -60,7 +60,7 @@
                 throw new InvalidOperationException("Can't remove root element");
             }
 
-            var node = GetNodeOrThrow(element);            
+            var node = GetNodeOrThrow(element);
 
             foreach (var kvp in node.Children)
             {
@@ -85,7 +85,7 @@
 
         public bool Contains(T element) => nodesByValue.ContainsKey(element);
 
-        public IEnumerable<T> GetCommonElements(Hierarchy<T> other) 
+        public IEnumerable<T> GetCommonElements(Hierarchy<T> other)
             => this.nodesByValue.Keys.Intersect(other.nodesByValue.Keys);
 
         public IEnumerator<T> GetEnumerator()
