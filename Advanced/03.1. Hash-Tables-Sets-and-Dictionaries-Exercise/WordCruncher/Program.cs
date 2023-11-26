@@ -12,9 +12,15 @@ namespace WordCruncher
             string lookUpWord = Console.ReadLine();
             var matches = new List<List<string>>();
             var match = new List<string>();
+
+            if(string.IsNullOrEmpty(lookUpWord) || words.Count == 0)
+            {
+                return;
+            }
+
             FindMatchs(words, lookUpWord, matches, match);
 
-            var result = matches.Select(m => string.Join(" ", m)).OrderBy(m => m);
+            var result = matches.Select(m => string.Join(" ", m)).Distinct().OrderBy(m => m);
 
             Console.WriteLine(string.Join(Environment.NewLine, result));            
         }
@@ -31,7 +37,7 @@ namespace WordCruncher
                         if (matchedWord == "")
                         {
                             matchedWord = words[i];
-                            currMatch.Add(words[i]);
+                            currMatch.Add(matchedWord);
                             words.RemoveAt(i);
                             i--;
                         }
