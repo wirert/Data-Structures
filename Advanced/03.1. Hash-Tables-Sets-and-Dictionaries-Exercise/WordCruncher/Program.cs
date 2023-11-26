@@ -13,7 +13,7 @@ namespace WordCruncher
             var matches = new List<List<string>>();
             var match = new List<string>();
 
-            if(string.IsNullOrEmpty(lookUpWord) || words.Count == 0)
+            if (string.IsNullOrEmpty(lookUpWord) || words.Count == 0)
             {
                 return;
             }
@@ -25,52 +25,51 @@ namespace WordCruncher
             Console.WriteLine(string.Join(Environment.NewLine, result));            
         }
 
-        private static void FindMatchs(List<string> words, string lookUpWord, List<List<string>> allMathces, List<string> currMatch)
+        private static void FindMatchs(List<string> words, string lookUpWord, List<List<string>> allMathces, List<string> currMatchList)
         {           
             while (lookUpWord.Length > 0)
             {
-                string matchedWord = "";
+                string previousMatchedWord = "";
                 for (int i = 0; i < words.Count; i++)                
                 {
                     if (lookUpWord.StartsWith(words[i]))
                     {
-                        if (matchedWord == "")
+                        if (previousMatchedWord == "")
                         {
-                            matchedWord = words[i];
-                            currMatch.Add(matchedWord);
+                            previousMatchedWord = words[i];
+                            currMatchList.Add(words[i]);
                             words.RemoveAt(i);
                             i--;
                         }
-                        else if (matchedWord != words[i])
+                        else if (previousMatchedWord != words[i])
                         {
-                            var copy = new List<string>(currMatch);
-                            copy[copy.Count - 1] = words[i];
+                            var newMatchList = new List<string>(currMatchList);
+                            newMatchList[newMatchList.Count - 1] = words[i];
                             
                             var wordsCopy = new List<string>(words);
-                            wordsCopy[i] = matchedWord;
-                            string copyLookUp = lookUpWord.Substring(words[i].Length);
+                            wordsCopy[i] = previousMatchedWord;
+                            string newLookUpWord = lookUpWord.Substring(words[i].Length);
 
-                            FindMatchs(wordsCopy, copyLookUp, allMathces, copy);                           
+                            FindMatchs(wordsCopy, newLookUpWord, allMathces, newMatchList);                           
                         }
                         else
                         {
                             continue;
-                        }
-                        
+                        }                        
                     }
                 }                
 
-                if (matchedWord == "")
+                if (previousMatchedWord == "")
                 {
                     break;
                 }
 
-                lookUpWord = lookUpWord.Substring(matchedWord.Length);
+                lookUpWord = lookUpWord.Substring(previousMatchedWord.Length);
             }
 
             if (lookUpWord.Length == 0)
             {
-                allMathces.Add(currMatch);
+                allMathces.Add(currMatchList);
             }
         }
     }

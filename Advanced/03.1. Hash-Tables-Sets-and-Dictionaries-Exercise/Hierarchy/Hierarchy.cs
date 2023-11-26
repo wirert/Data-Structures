@@ -7,175 +7,113 @@
 
     public class Hierarchy<T> : IHierarchy<T>
     {
-        private Hierarchy<T> parent;
-
-        private List<Hierarchy<T>> children;
-
-        private T value;
-
-        private Hierarchy(T value, Hierarchy<T> parent) :this(value)
+        private class Node
         {
-            this.parent = parent;
+            public Node(T value)
+            {
+                Value = value;
+                Children = new Dictionary<T, Node>();
+            }
+
+            public Node(T value, Node parent) : this(value)
+            {
+                Parent = parent;
+            }
+
+            public T Value { get; set; }
+            public Node Parent { get; set; }
+            public Dictionary<T,Node> Children { get; set; }
         }
+
+        private Node root;
+
+        private Dictionary<T, Node> nodesByValue;
+
+        public int Count => nodesByValue.Count;
 
         public Hierarchy(T value)
         {
-            this.value = value;
-            children = new List<Hierarchy<T>>();
-        }
-
-        public int Count => CountChildren(this);
-
-        private int CountChildren(Hierarchy<T> node)
-        {
-            if (node == null) return 0;
-            var count = 1;
-
-            foreach (var child in node.children)
+            root = new Node(value);
+            nodesByValue = new Dictionary<T, Node>
             {
-                count += CountChildren(child);
-            }
-
-            return count;
+                { value, root }
+            };
         }
 
         public void Add(T element, T child)
         {
-            var node = GetElement(element);
+            var node = GetNodeOrThrow(element);
 
-            if (node == null)
+            if (node.Children.ContainsKey(child))
             {
-                throw new ArgumentException("Element doesn't exist!");
+                throw new ArgumentException($"Child with value {child} already exist!");
             }
-
-            if(Contains(child))
-            {
-                throw new ArgumentException("Child already exist!");
-            }
-
-            node.children.Add(new Hierarchy<T>(child, node));
-        }
-
-
-        public bool Contains(T element) => GetElement(element) != null;
-
-        private Hierarchy<T> GetElement(T value)
-        {
-            var queue = new Queue<Hierarchy<T>>();
-            queue.Enqueue(this);
-
-            while (queue.Count > 0)
-            {
-                var node = queue.Dequeue();
-                if (node.value.Equals(value))
-                {
-                    return node;
-                }
-
-                foreach (var child in node.children)
-                {
-                    queue.Enqueue(child);
-                }
-            }
-
-            return null;
-        }
-
-        public IEnumerable<T> GetChildren(T element)
-        {
-            var node = GetElement(element);
-
-            if (node == null)
-            {
-                throw new ArgumentException("Element doesn't exist!");
-            }
-
-            return node.children.Select(c => c.value);
-        }
-
-        public IEnumerable<T> GetCommonElements(Hierarchy<T> other)
-        {
-            var set1 = GetAll(this);
-            var set2 = GetAll(other);
-
-            return set1.Intersect(set2);
-        }
-
-        public IEnumerator<T> GetEnumerator()
-        {
-            var queue = new Queue<Hierarchy<T>>();
-            queue.Enqueue(this);
-
-            while (queue.Count > 0)
-            {
-                var node = queue.Dequeue();
-                foreach (var child in node.children)
-                {
-                    queue.Enqueue(child);
-                }
-
-                yield return node.value;
-            }
-        }
-
-        public T GetParent(T element)
-        {
-            var node = GetElement(element);
-
-            if (node == null)
-            {
-                throw new ArgumentException();
-            }
-
-            return node.parent == null ? default : node.parent.value;
+            var childNode = new Node(child, node);
+            node.Children.Add(child, childNode);
+            nodesByValue.Add(child, childNode);
         }
 
         public void Remove(T element)
         {
-            var node = GetElement(element);
-
-            if (node == null)
+            if (root.Value.Equals(element))
             {
-                throw new ArgumentException();
+                throw new InvalidOperationException("Can't remove root element");
             }
 
-            if(node.parent == null)
+            var node = GetNodeOrThrow(element);            
+
+            foreach (var kvp in node.Children)
             {
-                throw new InvalidOperationException();
+                var childNode = kvp.Value;
+                childNode.Parent = node.Parent;
+                node.Parent.Children.Add(childNode.Value, childNode);
             }
+            node.Parent.Children.Remove(node.Value);
+            nodesByValue.Remove(element);
+        }
 
-            var children = node.children;
+        public IEnumerable<T> GetChildren(T element)
+            => GetNodeOrThrow(element).Children.Keys;
 
-            foreach (var child in children)
+
+        public T GetParent(T element)
+        {
+            var parent = GetNodeOrThrow(element).Parent;
+
+            return parent == null ? default : parent.Value;
+        }
+
+        public bool Contains(T element) => nodesByValue.ContainsKey(element);
+
+        public IEnumerable<T> GetCommonElements(Hierarchy<T> other) 
+            => this.nodesByValue.Keys.Intersect(other.nodesByValue.Keys);
+
+        public IEnumerator<T> GetEnumerator()
+        {
+            var queue = new Queue<Node>();
+            queue.Enqueue(root);
+            while (queue.Count > 0)
             {
-                child.parent = node.parent;
-                node.parent.children.Add(child);
-            }
+                var node = queue.Dequeue();
+                foreach (var childPair in node.Children)
+                {
+                    queue.Enqueue(childPair.Value);
+                }
 
-            node.parent.children.Remove(node);
-            node.parent = null;
+                yield return node.Value;
+            }
         }
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
-        private HashSet<T> GetAll(Hierarchy<T> tree)
+        private Node GetNodeOrThrow(T element)
         {
-            var queue = new Queue<Hierarchy<T>>();
-            var set = new HashSet<T>();
-            queue.Enqueue(tree);
-
-            while (queue.Count > 0)
+            if (!Contains(element))
             {
-                var node = queue.Dequeue();
-                foreach (var child in node.children)
-                {
-                    queue.Enqueue(child);
-                }
-
-                set.Add(node.value);
+                throw new ArgumentException();
             }
 
-            return set;
+            return nodesByValue[element];
         }
     }
 }
