@@ -7,7 +7,7 @@ namespace Exam.PackageManagerLite
     public class PackageManager : IPackageManager
     {
         private Dictionary<string, Package> packages = new Dictionary<string, Package>();
-        private HashSet<string> packagesNameVersion = new HashSet<string>();
+        private Dictionary<string, Dictionary<string, Package>> versionsByName = new Dictionary<string, Dictionary<string, Package>>();
 
         public void AddDependency(string packageId, string dependencyId)
         {
@@ -44,19 +44,31 @@ namespace Exam.PackageManagerLite
             .ThenBy(p => p.Version);
 
         public IEnumerable<Package> GetOrderedPackagesByReleaseDateThenByVersion()
-            => packages.Values
-            .OrderByDescending(p => p.ReleaseDate)
-            .ThenBy(p => p.Version);
+        {
+            var result = new List<Package>();
+            foreach (var packByVer in versionsByName.Values)
+            {
+              result.Add(packByVer.Values.OrderByDescending(p => p.ReleaseDate).First());
+            }
+              return result.OrderByDescending(p => p.ReleaseDate)
+                .ThenBy(p => p.Version);
+        }
 
         public void RegisterPackage(Package package)
         {
-            if (packagesNameVersion.Contains(package.Name + package.Version))
+            if (versionsByName.ContainsKey(package.Name) && versionsByName[package.Name].ContainsKey(package.Version))
             {
                 throw new ArgumentException();            
             }
 
             packages.Add(package.Id, package);
-            packagesNameVersion.Add(package.Name + package.Version);
+
+            if(!versionsByName.ContainsKey(package.Name))
+            {
+                versionsByName.Add(package.Name, new Dictionary<string, Package>());
+            }
+
+            versionsByName[package.Name].Add(package.Version, package);
         }
 
         public void RemovePackage(string packageId)
@@ -67,7 +79,11 @@ namespace Exam.PackageManagerLite
             }
 
             var package = packages[packageId];
-            packagesNameVersion.Remove(package.Name + package.Version);
+            versionsByName[package.Name].Remove(package.Version);
+            if (versionsByName[package.Name].Count == 0)
+            {
+                versionsByName.Remove(package.Name);
+            }
             packages.Remove(packageId);
 
             foreach (var dependant in package.Dependants)
