@@ -7,7 +7,7 @@ namespace Exam.PackageManagerLite
     public class PackageManager : IPackageManager
     {
         private Dictionary<string, Package> packages = new Dictionary<string, Package>();
-        private Dictionary<string, Dictionary<string, Package>> versionsByName = new Dictionary<string, Dictionary<string, Package>>();
+        private Dictionary<string, Dictionary<string, Package>> packageVersionsByName = new Dictionary<string, Dictionary<string, Package>>();
 
         public void AddDependency(string packageId, string dependencyId)
         {
@@ -46,29 +46,37 @@ namespace Exam.PackageManagerLite
         public IEnumerable<Package> GetOrderedPackagesByReleaseDateThenByVersion()
         {
             var result = new List<Package>();
-            foreach (var packByVer in versionsByName.Values)
+            foreach (var packagesByVersion in packageVersionsByName.Values)
             {
-              result.Add(packByVer.Values.OrderByDescending(p => p.ReleaseDate).First());
+                var latestPackageVersion = packagesByVersion.Values
+                    .OrderByDescending(p => p.ReleaseDate)
+                    .First();
+
+                result.Add(latestPackageVersion);
             }
-              return result.OrderByDescending(p => p.ReleaseDate)
+            return result
+                .OrderByDescending(p => p.ReleaseDate)
                 .ThenBy(p => p.Version);
         }
 
         public void RegisterPackage(Package package)
         {
-            if (versionsByName.ContainsKey(package.Name) && versionsByName[package.Name].ContainsKey(package.Version))
+            if (
+                packageVersionsByName.ContainsKey(package.Name) &&
+                packageVersionsByName[package.Name].ContainsKey(package.Version)
+                )
             {
-                throw new ArgumentException();            
+                throw new ArgumentException();
             }
 
             packages.Add(package.Id, package);
 
-            if(!versionsByName.ContainsKey(package.Name))
+            if (!packageVersionsByName.ContainsKey(package.Name))
             {
-                versionsByName.Add(package.Name, new Dictionary<string, Package>());
+                packageVersionsByName.Add(package.Name, new Dictionary<string, Package>());
             }
 
-            versionsByName[package.Name].Add(package.Version, package);
+            packageVersionsByName[package.Name].Add(package.Version, package);
         }
 
         public void RemovePackage(string packageId)
@@ -79,11 +87,13 @@ namespace Exam.PackageManagerLite
             }
 
             var package = packages[packageId];
-            versionsByName[package.Name].Remove(package.Version);
-            if (versionsByName[package.Name].Count == 0)
+            packageVersionsByName[package.Name].Remove(package.Version);
+
+            if (packageVersionsByName[package.Name].Count == 0)
             {
-                versionsByName.Remove(package.Name);
+                packageVersionsByName.Remove(package.Name);
             }
+
             packages.Remove(packageId);
 
             foreach (var dependant in package.Dependants)
