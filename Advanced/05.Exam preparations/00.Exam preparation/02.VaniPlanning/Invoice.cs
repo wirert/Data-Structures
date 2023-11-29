@@ -24,5 +24,10 @@
         public DateTime IssueDate { get; set; }
 
         public DateTime DueDate { get; set; }
+
+        public override bool Equals(object obj)
+        {
+            return SerialNumber.Equals(((Invoice)obj).SerialNumber);
+        }
     }
 }
