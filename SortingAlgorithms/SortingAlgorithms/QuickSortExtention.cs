@@ -4,9 +4,9 @@
     using System.Collections.Generic;
     using System.Linq;
 
-    public static class QuickSort
+    public static class QuickSortExtention
     {
-        public static ICollection<T> Sort<T>(ICollection<T> arr) where T : IComparable<T>
+        public static ICollection<T> QuickSort<T>(this ICollection<T> arr) where T : IComparable<T>
         {
             var result = arr.ToArray();
             Sort(result, 0, arr.Count - 1);
