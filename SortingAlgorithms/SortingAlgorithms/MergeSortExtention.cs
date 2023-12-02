@@ -6,6 +6,12 @@
 
     public static class MergeSortExtention
     {
+        /// <summary>
+        /// Sorts the collection and return another collection
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="source">Collection of comparable items</param>
+        /// <returns>New IEnumerable collection</returns>
         public static IEnumerable<T> MergeSort<T>(this IEnumerable<T> source) where T : IComparable<T>
             => Sort<T>(source.ToList());
 

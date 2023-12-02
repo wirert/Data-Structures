@@ -6,6 +6,12 @@
 
     public static class QuickSortExtention
     {
+        /// <summary>
+        /// Sorts the collection and return new enumerable collection
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="arr"></param>
+        /// <returns>New collection</returns>
         public static ICollection<T> QuickSort<T>(this ICollection<T> arr) where T : IComparable<T>
         {
             var result = arr.ToArray();
