@@ -19,5 +19,17 @@ namespace _02.FitGym
         public DateTime RegistrationDate { get; set; }
 
         public int Visits { get; set; }
+
+        public Trainer Trainer { get; set; }
+
+        public override bool Equals(object obj)
+        {
+            return Id.Equals(((Member)obj).Id);
+        }
+
+        public override int GetHashCode()
+        {
+            return Id.GetHashCode();
+        }
     }
 }
