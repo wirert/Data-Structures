@@ -1,6 +1,9 @@
 ﻿namespace Exam.MobileX
 {
-    public class Vehicle
+    using System;
+    using System.Diagnostics.CodeAnalysis;
+
+    public class Vehicle : IComparable<Vehicle>
     {
         public Vehicle(string id, string brand, string model, string location, string color, int horsepower, double price, bool isVIP)
         {
@@ -29,5 +32,20 @@
         public double Price { get; set; }
 
         public bool IsVIP { get; set; }
+
+        public string Seller { get; set; }
+
+        public int CompareTo( Vehicle other)
+            => Price.CompareTo(other.Price);
+
+        public override bool Equals(object obj)
+        {
+            return Id.Equals((obj as Vehicle).Id);
+        }
+
+        public override int GetHashCode()
+        {
+            return Id.GetHashCode();
+        }        
     }
 }
