@@ -1,53 +1,188 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace TaskManager
 {
     public class Manager : IManager
     {
-        public void AddDependency(string taskId, string dependentTaskId)
-        {
-            throw new NotImplementedException();
-        }
+        private Dictionary<string, Task> tasksById = new Dictionary<string, Task>();
+
+        public int Size() => tasksById.Count;
+
+        public bool Contains(string taskId) => tasksById.ContainsKey(taskId);
 
         public void AddTask(Task task)
         {
-            throw new NotImplementedException();
-        }
+            if (Contains(task.Id))
+            {
+                throw new ArgumentException();
+            }
 
-        public bool Contains(string taskId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task Get(string taskId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public IEnumerable<Task> GetDependencies(string taskId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public IEnumerable<Task> GetDependents(string taskId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void RemoveDependency(string taskId, string dependentTaskId)
-        {
-            throw new NotImplementedException();
+            tasksById.Add(task.Id, task);
         }
 
         public void RemoveTask(string taskId)
         {
-            throw new NotImplementedException();
+            if (!Contains(taskId))
+            {
+                throw new ArgumentException();
+            }
+            var task = tasksById[taskId];
+
+            foreach (var dependancy in task.Dependancies)
+            {
+                dependancy.Dependants.Remove(task);
+            }
+
+            foreach (var dependant in task.Dependants)
+            {
+                dependant.Dependancies.Remove(task);
+            }
+
+            tasksById.Remove(taskId);
         }
 
-        public int Size()
+        public Task Get(string taskId)
         {
-            throw new NotImplementedException();
+            if (!Contains(taskId))
+            {
+                throw new ArgumentException();
+            }
+
+            return tasksById[taskId];
+        }
+
+        public void AddDependency(string taskId, string dependentTaskId)
+        {
+            if (!Contains(taskId) || !Contains(dependentTaskId))
+            {
+                throw new ArgumentException();
+            }
+
+            var task = tasksById[taskId];
+            var dependentTask = tasksById[dependentTaskId];
+
+            if (HasDependancy(dependentTask, task))
+            {
+                throw new ArgumentException();
+            }
+
+            task.Dependancies.Add(dependentTask);
+            dependentTask.Dependants.Add(task);
+        }
+
+        public void RemoveDependency(string taskId, string dependentTaskId)
+        {
+            if (!Contains(taskId) || !Contains(dependentTaskId))
+            {
+                throw new ArgumentException();
+            }
+
+            var task = tasksById[taskId];
+            var dependentTask = tasksById[dependentTaskId];
+
+            if (!task.Dependancies.Contains(dependentTask))
+            {
+                throw new ArgumentException();
+            }
+
+            task.Dependancies.Remove(dependentTask);
+            dependentTask.Dependants.Remove(task);
+        }
+
+        public IEnumerable<Task> GetDependencies(string taskId)
+        {
+            if (!Contains(taskId))
+            {
+                return Enumerable.Empty<Task>();
+            }
+
+            var task = tasksById[taskId];            
+
+            return GetDependencies(task);
+        }
+
+        private IEnumerable<Task> GetDependencies(Task task)
+        {
+            var queue = new Queue<Task>();
+            foreach (var dep in task.Dependancies)
+            {
+                queue.Enqueue(dep);
+            }
+            var result = new List<Task>();
+
+            while (queue.Count > 0)
+            {
+                var current = queue.Dequeue();
+                result.Add(current);
+
+                foreach (var curDependant in current.Dependancies)
+                {
+                    queue.Enqueue(curDependant);
+                }
+            }
+
+            return result;
+        }
+
+        public IEnumerable<Task> GetDependents(string taskId)
+        {
+            if (!Contains(taskId))
+            {
+                return Enumerable.Empty<Task>();
+            }
+
+            var task = tasksById[taskId];
+
+            return GetDependants(task);
+        }
+
+        private IEnumerable<Task> GetDependants(Task task)
+        {
+            var queue = new Queue<Task>();
+            foreach (var dep in task.Dependants)
+            {
+                queue.Enqueue(dep);
+            }
+            var result = new List<Task>();
+
+            while (queue.Count > 0)
+            {
+                var current = queue.Dequeue();
+                result.Add(current);
+
+                foreach (var curDependant in current.Dependants)
+                {
+                    queue.Enqueue(curDependant);
+                }
+            }
+
+            return result;
+        }
+
+        private bool HasDependancy(Task task, Task dependOnTask)
+        {
+            var queue = new Queue<Task>();
+            queue.Enqueue(task);
+
+            while (queue.Count > 0)
+            {
+                var curDependant = queue.Dequeue();
+
+                if (curDependant.Dependancies.Contains(dependOnTask))
+                {
+                    return true;
+                }
+
+                foreach (var dependant in curDependant.Dependants)
+                {
+                    queue.Enqueue(dependant);
+                }
+            }
+
+            return false;
         }
     }
 }
