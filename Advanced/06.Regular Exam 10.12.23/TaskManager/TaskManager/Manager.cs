@@ -1,10 +1,9 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
 namespace TaskManager
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+
     public class Manager : IManager
     {
         private Dictionary<string, Task> tasksById = new Dictionary<string, Task>();
@@ -104,29 +103,6 @@ namespace TaskManager
             return GetDependencies(task);
         }
 
-        private IEnumerable<Task> GetDependencies(Task task)
-        {
-            var queue = new Queue<Task>();
-            foreach (var dep in task.Dependancies)
-            {
-                queue.Enqueue(dep);
-            }
-            var result = new List<Task>();
-
-            while (queue.Count > 0)
-            {
-                var current = queue.Dequeue();
-                result.Add(current);
-
-                foreach (var curDependant in current.Dependancies)
-                {
-                    queue.Enqueue(curDependant);
-                }
-            }
-
-            return result;
-        }
-
         public IEnumerable<Task> GetDependents(string taskId)
         {
             if (!Contains(taskId))
@@ -165,24 +141,50 @@ namespace TaskManager
         private bool HasDependancy(Task task, Task dependOnTask)
         {
             var queue = new Queue<Task>();
-            queue.Enqueue(task);
+            foreach (var dep in task.Dependancies)
+            {
+                queue.Enqueue(dep);
+            }            
 
             while (queue.Count > 0)
             {
-                var curDependant = queue.Dequeue();
+                var current = queue.Dequeue();
 
-                if (curDependant.Dependancies.Contains(dependOnTask))
+                if (current.Dependancies.Contains(dependOnTask))
                 {
                     return true;
                 }
 
-                foreach (var dependant in curDependant.Dependants)
+                foreach (var curDependant in current.Dependancies)
                 {
-                    queue.Enqueue(dependant);
+                    queue.Enqueue(curDependant);
                 }
             }
 
             return false;
+        }
+
+        private IEnumerable<Task> GetDependencies(Task task)
+        {
+            var queue = new Queue<Task>();
+            foreach (var dep in task.Dependancies)
+            {
+                queue.Enqueue(dep);
+            }
+            var result = new List<Task>();
+
+            while (queue.Count > 0)
+            {
+                var current = queue.Dequeue();
+                result.Add(current);
+
+                foreach (var curDependant in current.Dependancies)
+                {
+                    queue.Enqueue(curDependant);
+                }
+            }
+
+            return result;
         }
     }
 }
