@@ -18,6 +18,8 @@ namespace WordCruncher
                 return;
             }
 
+            words = words.Where(w => lookUpWord.Contains(w)).ToList(); 
+
             FindMatchs(words, lookUpWord, matches, match);
 
             var result = matches.Select(m => string.Join(" ", m)).Distinct().OrderBy(m => m);
@@ -30,6 +32,7 @@ namespace WordCruncher
             while (lookUpWord.Length > 0)
             {
                 string previousMatchedWord = "";
+
                 for (int i = 0; i < words.Count; i++)                
                 {
                     if (lookUpWord.StartsWith(words[i]))

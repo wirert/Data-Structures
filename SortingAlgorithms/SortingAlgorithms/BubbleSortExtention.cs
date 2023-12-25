@@ -15,17 +15,24 @@
         public static IEnumerable<T> BubbleSort<T>(this IEnumerable<T> values) where T : IComparable<T>
         {
             var sortedArr = values.ToArray();
+            bool isSorted = false;
+            int sortedElCount = 0;
 
-            for ( var i = 0; i < sortedArr.Length - 1; i++ )
+            while (!isSorted)
             {
-                for ( var j = 0; j < sortedArr.Length - 1; j++)
+                isSorted = true;
+
+                for (int i = 1; i < sortedArr.Length - sortedElCount; i++)
                 {
-                    if (sortedArr[j].CompareTo(sortedArr[j + 1]) > 0)
+                    if (sortedArr[i - 1].CompareTo(sortedArr[i]) > 0)
                     {
-                        SwapElements(sortedArr, j, j + 1);
+                        SwapElements(sortedArr, i, i - 1);
+                        isSorted = false;
                     }
                 }
-            }
+
+                sortedElCount++;
+            }            
 
             return sortedArr;
         }
