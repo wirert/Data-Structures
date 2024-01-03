@@ -36,21 +36,21 @@
         private static int Partition<T>(T[] arr, int loIndex, int hiIndex) where T : IComparable<T>
         {
             var pivot = arr[hiIndex];
-            var pivotIndex = loIndex - 1;
+            var pivotSwapIndex = loIndex - 1;
 
             for (int i = loIndex; i < hiIndex; i++)
             {
                 if (arr[i].CompareTo(pivot) <= 0)
                 {
-                    pivotIndex++;
-                    SwapElements(arr, pivotIndex, i);
+                    pivotSwapIndex++;
+                    SwapElements(arr, pivotSwapIndex, i);
                 }
             }
 
-            pivotIndex++;
-            SwapElements(arr, pivotIndex, hiIndex);
+            pivotSwapIndex++;
+            SwapElements(arr, pivotSwapIndex, hiIndex);
 
-            return pivotIndex;
+            return pivotSwapIndex;
         }
 
         private static void SwapElements<T>(T[] arr, int i, int j)

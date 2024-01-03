@@ -63,10 +63,10 @@ namespace _03.MinHeap
             }
         }
 
-        private protected void HeapifyDown(int index)
+        private protected void HeapifyDown(int parentIndex)
         {
-            var leftChildIndex = index * 2 + 1;
-            var rightChildIndex = index * 2 + 2;
+            var leftChildIndex = parentIndex * 2 + 1;
+            var rightChildIndex = parentIndex * 2 + 2;
 
             if (leftChildIndex >= Size) return;
 
@@ -78,9 +78,9 @@ namespace _03.MinHeap
                 smallerElementIndex = rightChildIndex;
             }
 
-            if (IsSmallerElement(smallerElementIndex, index))
+            if (IsSmallerElement(smallerElementIndex, parentIndex))
             {
-                SwapElements(smallerElementIndex, index);
+                SwapElements(smallerElementIndex, parentIndex);
 
                 HeapifyDown(smallerElementIndex);
             }
